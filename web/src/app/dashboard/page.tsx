@@ -9,6 +9,12 @@ import { SystemTerminal } from "@/components/SystemTerminal";
 
 export default function DashboardPage() {
     const [analyzedFile, setAnalyzedFile] = useState<File | null>(null);
+    const [analysisResult, setAnalysisResult] = useState<any>(null);
+
+    const handleAnalysisComplete = (file: File, result: any) => {
+        setAnalyzedFile(file);
+        setAnalysisResult(result);
+    };
 
     return (
         <div className="space-y-6">
@@ -34,13 +40,17 @@ export default function DashboardPage() {
                 {analyzedFile ? (
                     <AnalysisResult
                         file={analyzedFile}
-                        onReset={() => setAnalyzedFile(null)}
+                        result={analysisResult}
+                        onReset={() => {
+                            setAnalyzedFile(null);
+                            setAnalysisResult(null);
+                        }}
                     />
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         {/* Left Column: Upload & Neural Core */}
                         <div className="lg:col-span-8 space-y-6">
-                            <UploadZone onAnalysisComplete={setAnalyzedFile} />
+                            <UploadZone onAnalysisComplete={handleAnalysisComplete} />
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <NeuralCore />

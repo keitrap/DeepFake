@@ -18,13 +18,17 @@ import { Spectrogram } from "@/components/Spectrogram";
 
 interface AnalysisResultProps {
     file: File;
+    result?: any;
     onReset: () => void;
 }
 
-export function AnalysisResult({ file, onReset }: AnalysisResultProps) {
+export function AnalysisResult({ file, result, onReset }: AnalysisResultProps) {
+    const confidence = result?.confidence || 98.2;
+    const isDeepfake = result?.is_deepfake !== undefined ? result.is_deepfake : true;
+    const verdict = isDeepfake ? "DEEPFAKE DETECTED" : "AUTHENTIC MEDIA";
+    const verdictColor = isDeepfake ? "text-red-500" : "text-green-500";
+    const verdictBg = isDeepfake ? "bg-red-500/10 border-red-500/20" : "bg-green-500/10 border-green-500/20";
     // Mock result - in a real app this would come from the backend
-    const isDeepfake = true;
-    const confidence = 99.8;
 
     return (
         <div className="space-y-6">

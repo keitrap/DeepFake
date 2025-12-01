@@ -6,7 +6,7 @@ import { Upload, FileVideo, FileImage, FileAudio, X, Scan, AlertCircle } from "l
 import { cn } from "@/lib/utils";
 
 interface UploadZoneProps {
-    onAnalysisComplete: (file: File) => void;
+    onAnalysisComplete: (file: File, result: any) => void;
 }
 
 export function UploadZone({ onAnalysisComplete }: UploadZoneProps) {
@@ -39,14 +39,29 @@ export function UploadZone({ onAnalysisComplete }: UploadZoneProps) {
         }
     };
 
-    const startAnalysis = () => {
+    const startAnalysis = async () => {
         if (!file) return;
         setIsAnalyzing(true);
-        // Simulate analysis for now
-        setTimeout(() => {
+
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch("http://localhost:8000/analyze", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) throw new Error("Analysis failed");
+
+            const data = await response.json();
+            onAnalysisComplete(file, data);
+        } catch (error) {
+            console.error("Error analyzing file:", error);
+            alert("Analysis failed. Please try again.");
+        } finally {
             setIsAnalyzing(false);
-            onAnalysisComplete(file);
-        }, 3000);
+        }
     };
 
     const clearFile = () => {
