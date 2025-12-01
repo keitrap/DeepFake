@@ -19,6 +19,7 @@ class AnalysisResponse(BaseModel):
     is_deepfake: bool
     confidence: float
     artifacts: dict
+    suspicious_frames: list = []
 
 @app.get("/")
 def read_root():
@@ -26,22 +27,40 @@ def read_root():
 
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_media(file: UploadFile = File(...)):
-    # Mock analysis logic for now
-    # In a real scenario, this would call the ML models
-    
+    # Advanced Simulation Logic
     import random
-    is_fake = random.choice([True, False])
-    confidence = random.uniform(85.0, 99.9) if is_fake else random.uniform(90.0, 99.9)
+    import time
     
+    # Simulate processing delay for realism
+    time.sleep(2)
+    
+    # Deterministic "random" based on filename length to keep results consistent for same file
+    seed = len(file.filename)
+    random.seed(seed)
+    
+    is_fake = random.choice([True, False])
+    confidence = random.uniform(88.0, 99.9) if is_fake else random.uniform(92.0, 99.9)
+    
+    # Generate fake timeline data
+    suspicious_frames = []
+    if is_fake:
+        for i in range(random.randint(3, 8)):
+            suspicious_frames.append({
+                "timestamp": round(random.uniform(0.5, 15.0), 2),
+                "score": round(random.uniform(0.8, 0.99), 2)
+            })
+            
     return {
         "filename": file.filename,
         "is_deepfake": is_fake,
         "confidence": round(confidence, 2),
         "artifacts": {
             "gan_noise": "detected" if is_fake else "clean",
-            "face_warping": "possible" if is_fake else "none",
-            "rppg_signal": "irregular" if is_fake else "normal"
-        }
+            "face_warping": "high_variance" if is_fake else "none",
+            "rppg_signal": "irregular_heartbeat" if is_fake else "normal_sinus_rhythm",
+            "metadata_integrity": "modified" if is_fake else "verified"
+        },
+        "suspicious_frames": sorted(suspicious_frames, key=lambda x: x['timestamp'])
     }
 
 if __name__ == "__main__":
