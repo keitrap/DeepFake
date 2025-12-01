@@ -47,7 +47,8 @@ export function UploadZone({ onAnalysisComplete }: UploadZoneProps) {
             const formData = new FormData();
             formData.append("file", file);
 
-            const response = await fetch("http://localhost:8000/analyze", {
+            // Use relative path for production (Vercel)
+            const response = await fetch("/api/analyze", {
                 method: "POST",
                 body: formData,
             });
